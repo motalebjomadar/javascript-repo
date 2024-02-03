@@ -1,51 +1,51 @@
-function getInputValue (inputId) {
-    const inputTag = document.getElementById(inputId);
-    const inputTagText = inputTag.value ;
-    const newNumber = parseFloat(inputTagText);
-    inputTag.value = '';
-    return newNumber;
-}
-// This is for withdraw condition, user can't withdraw big amount from actual balance.
-function getInnerTextValue(fieldId) {
-    const fieldTag = document.getElementById(fieldId);
-    const fieldTagTextValue = fieldTag.innerText;
-    const value = parseFloat(fieldTagTextValue);
-    return value;
-}
-function updateTotal(totalId,amount) {
-    const totalTag = document.getElementById(totalId);
-    const totalTagText = totalTag.innerText;
-    const previousNumber = parseFloat(totalTagText);
-    const newTotal = previousNumber + amount ;
-    totalTag.innerText = newTotal; 
-}
-function currentBalance(amount,isAdding) {
-    const balanceTag = document.getElementById('balance-total');
-    const balanceTagText = balanceTag.innerText;
-    const previousBalance = parseFloat(balanceTagText);
-    let newBalance;
-    if(isAdding==true){
-        newBalance = previousBalance + amount ;
+function updateInputNumber(product, price, isIncreasing){
+    const productInput = document.getElementById(product + '-input-field');
+    let productNumber = productInput.value ;
+    if(isIncreasing==true) {
+        productNumber = parseInt(productInput.value) + 1 ;
     }
-    else{
-        newBalance = previousBalance - amount ;
+    else if(productNumber>0){
+        productNumber = parseInt(productInput.value) - 1 ;
     }
-    balanceTag.innerText = newBalance;
+    productInput.value = productNumber ;
+
+    // Update total balance
+    const productTotal = document.getElementById(product + '-total-balance');
+    productTotal.innerText = productNumber * price ;
+    // Calculate total
+    calculateTotal();
 }
 
-document.getElementById('deposit-button').addEventListener('click',function(){
-    const amount = getInputValue ('deposit-input');
-    if(amount>0){
-        updateTotal('deposit-total',amount);
-        currentBalance(amount, true);
-    }
+function getInputValue(product){
+    const productTotal = document.getElementById(product + '-input-field');
+    const productNumber = parseInt(productTotal.value);
+    return productNumber ;
+}
+function calculateTotal(){
+    const phoneTotal = getInputValue('phone') * 1500 ;
+    const caseTotal = getInputValue('case') * 45 ;
+    const subTotal = phoneTotal + caseTotal ;
+    const tax = subTotal / 10 ;
+    const grandBalance = subTotal + tax ;
+    // Update on the html
+    document.getElementById('sub-total').innerText = subTotal ;
+    document.getElementById('tax').innerText = tax ;
+    document.getElementById('grand-balance').innerText = grandBalance ;
+}
+
+
+
+// Phone event
+document.getElementById('phone-plus-btn').addEventListener('click',function(){
+    updateInputNumber('phone', 1500, true );
 })
-
-document.getElementById('withdraw-button').addEventListener('click',function(){
-    const amount = getInputValue('withdraw-input');
-    const balance = getInnerTextValue('balance-total');
-    if(amount> 0 && amount <= balance ){
-        updateTotal('withdraw-total', amount);
-        currentBalance(amount, false);
-    }
+document.getElementById('phone-minus-btn').addEventListener('click',function(){
+    updateInputNumber('phone', 1500, false );
+})
+// Case event
+document.getElementById('case-plus-btn').addEventListener('click',function(){
+    updateInputNumber('case', 45, true );
+})
+document.getElementById('case-minus-btn').addEventListener('click',function(){
+    updateInputNumber('case', 45, false );
 })
